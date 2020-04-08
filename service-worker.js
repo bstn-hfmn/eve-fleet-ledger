@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/eve-fleet-ledger/precache-manifest.21067fceb1f4a0534be25439929e0843.js"
+  "/eve-fleet-ledger/precache-manifest.f29adf1d140c58da89ecf9dcb8dda92d.js"
 );
 
 self.addEventListener('message', (event) => {
