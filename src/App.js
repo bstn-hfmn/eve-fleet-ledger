@@ -174,6 +174,8 @@ function App() {
 
   const [usedItems, setUsedItems] = useState(null);
   const [priceFlag, setPriceFlag] = useState(0);
+
+  const [playerFilterFunction, setPlayerFilterFunction] = useState(null);
   
   return (
     <ThemeContext.Provider value={theme}>
@@ -240,15 +242,28 @@ function App() {
 
             const priceFetcher = async() => {
               let prices = [];
-              for(let i = 0; i < items.length; i++) {
-                const response = await fetch(`https://api.evemarketer.com/ec/marketstat/json?typeid=${items[i].id}&usesystem=30000142`);
-                const json = await response.json();
 
+              let query = '';
+              let sequentialIds = [];
+              for(let i = 0; i < items.length; i++) {
+                query += `${items[i].id}`;
+
+                sequentialIds.push(items[i].id);
+                if(i < items.length - 1)
+                  query += ',';
+              };
+
+              const response = await fetch(`https://api.evemarketer.com/ec/marketstat/json?typeid=${query}&usesystem=30000142`);
+              const json = await response.json();
+
+              for(let i = 0; i < items.length; i++) {
+
+                const current = json.filter((v) => v['buy']['forQuery']['types'][0] === items[i].id)[0]; 
                 prices.push({
                   id: items[i].id,
                   name: items[i].name,
-                  buy: json[0]['buy']['max'],
-                  sell: json[0]['sell']['min']
+                  buy: current['buy']['max'],
+                  sell: current['sell']['min']
                 });
               };
 
@@ -262,6 +277,20 @@ function App() {
           />
         
         <Filters 
+          onPlayerIgnore={(ignored) => {
+
+            setPlayerFilterFunction({
+              filter: (name) => {
+                for(let i = 0; i < ignored.length; i++) {
+                  if(ignored[i] === name)
+                    return false;
+                }
+
+                return true;
+              }
+            })
+
+          }}
           onCategoryFilter={(filters) => {
             setCategoryFilterFunction({
               filter: (item) => {
@@ -297,15 +326,26 @@ function App() {
             setLoadedPrices(null);
             const priceFetcher = async() => {
               let prices = [];
+    
+              let query = '';
               for(let i = 0; i < usedItems.length; i++) {
-                const response = await fetch(`https://api.evemarketer.com/ec/marketstat/json?typeid=${usedItems[i].id}&usesystem=${station.id}`);
-                const json = await response.json();
+                query += `${usedItems[i].id}`;
 
+                if(i < usedItems.length - 1)
+                  query += ',';
+              };
+              
+              const response = await fetch(`https://api.evemarketer.com/ec/marketstat/json?typeid=${query}&usesystem=${station.id}`);
+              const json = await response.json();
+              
+              
+              for(let i = 0; i < usedItems.length; i++) {
+                const current = json.filter((v) => v['buy']['forQuery']['types'][0] === usedItems[i].id)[0]; 
                 prices.push({
                   id: usedItems[i].id,
                   name: usedItems[i].name,
-                  buy: json[0]['buy']['max'],
-                  sell: json[0]['sell']['min']
+                  buy: current['buy']['max'],
+                  sell: current['sell']['min']
                 });
               };
 
@@ -342,6 +382,11 @@ function App() {
                     100, 
                     priceFlag, categoryFilterFunction ? categoryFilterFunction.filter : function() { return true; })
           }
+          
+          if(playerFilterFunction !== null && playerFilterFunction.filter) {
+            if(!playerFilterFunction.filter(value.name))
+              return null;
+          }
 
           return (
             <div
@@ -352,9 +397,11 @@ function App() {
 
                 setPlayerUIState({...state});
               }} 
-              onDragStart={
-                () => console.log("not yet..")
-              }
+              draggable="true"
+              onDragStart={(ev) => {
+                ev.dataTransfer.effectAllowed = 'move';
+                ev.dataTransfer.setData('text/plain', value.name);
+              }}
               id="ledger-card-grouping" 
               className="mb-6 p-4 relative cursor-pointer" 
               style={{ backgroundColor: theme.historyInnerBox, borderRadius: '5px 5px 0px 0px' }}>
@@ -368,12 +415,12 @@ function App() {
                     </span>
 
                     <div id="char-info-grouping" className="flex flex-col justify-start items-baseline ml-4 flex-1">
-                      <div className="flex flex-row justify-between w-full">
+                      <div className="flex flex-row justify-between w-full items-center">
                         <span className="font-medium text-xl" style={{color: theme.text}}>{value.name}</span>
                         <span className="font-medium text-xl relative" style={{color: theme.text }}>{!loadedPrices ? 'LOADING...' : `${p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ISK`}</span>
                       </div>
 
-                      <span className="font-medium text-xs mb-6" style={{color: '#BABABA'}}>{value.occurrences} occurrence(s) | <span className="font-black">{value.items.filter(categoryFilterFunction ? categoryFilterFunction.filter : function() { return true; }).length}</span> showing</span>
+                      <span className="font-medium text-xs mb-6" style={{color: '#BABABA'}}>{value.occurrences} occurrence(s) | <span className="font-medium">{value.items.filter(categoryFilterFunction ? categoryFilterFunction.filter : function() { return true; }).length}</span> showing</span>
 
                       <div id="dropdown-grouping" className={`${playerUIState[value.name].show ? 'flex' : 'hidden'} flex-col w-full mb-10`}>
                         
@@ -396,10 +443,10 @@ function App() {
                             className="flex flex-row justify-between items-center flex-1 bg-red-500 p-2 mb-3 relative"
                             style={{borderRadius: '5px', backgroundColor: theme.itemPreviewBackground}}>
                               
-                            <span className="font-medium" style={{color: theme.text, zIndex: 1}}>{item.name}<span className="text-xs" style={{color: '#BABABA'}}> x {item.quantity}</span></span>
+                            <span className="font-medium" style={{color: theme.text, zIndex: 1}}>{item.name}<span className="text-xs" style={{color: '#BABABA'}}> x {item.quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span></span>
                             <span className="font-medium" style={{color: theme.text, zIndex: 1}}>{!loadedPrices ? 'LOADING...' : getPriceString(loadedPrices, item, 100, priceFlag, categoryFilterFunction ? categoryFilterFunction.filter : function() { return true; })}</span>
 
-                            <div id="item-percent" className="absolute h-full" style={{width: !loadedPrices ? '0%' : `${getPricePercentage(loadedPrices, p, item, priceFlag, 100)}%`, borderRadius: '5px 5px 5px 5px', zIndex: 0, backgroundColor: theme.itemPreviewPercent, left: 0}}></div>
+                            <div id="item-percent" className="absolute h-full" style={{width: !loadedPrices ? '0%' : `${getPricePercentage(loadedPrices, p, item, priceFlag, 100)}%`, borderRadius: '5px 0px 0px 5px', zIndex: 0, backgroundColor: theme.itemPreviewPercent, left: 0}}></div>
                           
                           </div>
                           );
