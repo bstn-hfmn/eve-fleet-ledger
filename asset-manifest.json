@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/eve-fleet-ledger/static/css/main.fc62393a.chunk.css",
+    "main.js": "/eve-fleet-ledger/static/js/main.ff71aeb5.chunk.js",
+    "main.js.map": "/eve-fleet-ledger/static/js/main.ff71aeb5.chunk.js.map",
+    "runtime-main.js": "/eve-fleet-ledger/static/js/runtime-main.581e8fe8.js",
+    "runtime-main.js.map": "/eve-fleet-ledger/static/js/runtime-main.581e8fe8.js.map",
+    "static/js/2.069082c9.chunk.js": "/eve-fleet-ledger/static/js/2.069082c9.chunk.js",
+    "static/js/2.069082c9.chunk.js.map": "/eve-fleet-ledger/static/js/2.069082c9.chunk.js.map",
+    "index.html": "/eve-fleet-ledger/index.html",
+    "precache-manifest.21067fceb1f4a0534be25439929e0843.js": "/eve-fleet-ledger/precache-manifest.21067fceb1f4a0534be25439929e0843.js",
+    "service-worker.js": "/eve-fleet-ledger/service-worker.js",
+    "static/css/main.fc62393a.chunk.css.map": "/eve-fleet-ledger/static/css/main.fc62393a.chunk.css.map",
+    "static/js/2.069082c9.chunk.js.LICENSE.txt": "/eve-fleet-ledger/static/js/2.069082c9.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.581e8fe8.js",
+    "static/js/2.069082c9.chunk.js",
+    "static/css/main.fc62393a.chunk.css",
+    "static/js/main.ff71aeb5.chunk.js"
+  ]
+}
