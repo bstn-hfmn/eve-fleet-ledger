@@ -36,6 +36,7 @@ const THEMES = {
 
         itemPreviewBackground: '#E4E4E4',
         itemPreviewPercent: '#DADADA',
+        ledgerBackground: '#DADADA',
 
         stroke: '#F1F1F1'
     },
@@ -48,11 +49,11 @@ const THEMES = {
         themeButtonDeactive: '#292929',
 
         historyInnerBox: '#383838',
-        historyOuterBox: '#2F2F2F',
+        historyOuterBox: 'rgb(33, 33, 33)',
 
         svg: '#FAFAFA',
         checkBoxInner: '#383838',
-        checkBoxOuter: '#2F2F2F',
+        checkBoxOuter: 'rgb(33, 33, 33)',
 
         stationButtonActive: '#4D4D4D',
         stationButtonDeactive: '#2F2F2F',
@@ -61,7 +62,9 @@ const THEMES = {
         pricingButtonDeactive: '#2F2F2F',
 
         filterDropInInner: '#383838',
-        filterDropInOuter: '#2F2F2F',
+        filterDropInOuter: 'rgb(33, 33, 33)',
+        
+        ledgerBackground: '#2F2F2F',
         
         itemPreviewBackground: '#2F2F2F',
         itemPreviewPercent: '#4D4D4D',
@@ -176,6 +179,8 @@ function App() {
   const [priceFlag, setPriceFlag] = useState(0);
 
   const [playerFilterFunction, setPlayerFilterFunction] = useState(null);
+
+  const [pricePercentage, setPricePercentage] = useState(90);
   
   return (
     <ThemeContext.Provider value={theme}>
@@ -277,6 +282,15 @@ function App() {
           />
         
         <Filters 
+          onPricePercentChange={(v) => {
+            if(v.includes(','))
+              v = v.replace(',', '.');
+
+            if(v === '')
+              setPricePercentage(90);
+            else
+              setPricePercentage(parseFloat(v));
+          }}
           onPlayerIgnore={(ignored) => {
 
             setPlayerFilterFunction({
@@ -370,16 +384,50 @@ function App() {
 
         <div id="stroke" className="w-full block bg-red-500 mt-2 mb-8" style={{height: '3.5px', backgroundColor: theme.stroke}}></div>
         
-        <div id="ledger-wrapper" className="flex flex-col mb-2 mt-12 justify-start">
+        
+        <div 
+          id="ledger-wrapper"
+          className={`relative flex flex-col mb-2 justify-start ${!parsedHistory ? 'mt-12' : 'p-4 rounded mt-16'}`}
+          style={{backgroundColor: parsedHistory ? theme.ledgerBackground : ''}}
+          >
+            {parsedHistory &&  
+            <div id="copy" className="cursor-pointer absolute p-2 bg-blue-400 flex flex-row justify-center items-center top-0" style={{
+              width: '60px',
+              alignSelf: 'center',
+              borderTopLeftRadius: '30px',
+              borderTopRightRadius: '30px',
+              top: '-36px',
+              backgroundColor: theme.ledgerBackground
+            }}
+            onClick={() => {
+              if(!loadedPrices)
+                return;
+
+              let str = '';
+              parsedHistory.forEach((player) => {
+                if(playerFilterFunction) {
+                  if(!playerFilterFunction.filter(player.name))
+                    return;
+                }
+
+                str += `${player.name}\t${getSumPrice(loadedPrices, player.items, pricePercentage, priceFlag, categoryFilterFunction ? categoryFilterFunction.filter : function() { return true }).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}\n`;
+              });
+
+              navigator.clipboard.writeText(str);
+            }}>
+              <svg fill={theme.svg} height="28" viewBox="-21 0 512 512" width="512pt" xmlns="http://www.w3.org/2000/svg"><path d="M410.668 405.332H165.332c-32.363 0-58.664-26.3-58.664-58.664v-288c0-32.363 26.3-58.668 58.664-58.668h181.504c21.059 0 41.687 8.535 56.555 23.445l42.496 42.496c15.125 15.125 23.445 35.223 23.445 56.575v224.152c0 32.363-26.3 58.664-58.664 58.664zM165.332 32c-14.7 0-26.664 11.969-26.664 26.668v288c0 14.7 11.965 26.664 26.664 26.664h245.336c14.7 0 26.664-11.965 26.664-26.664V122.516c0-12.82-4.992-24.871-14.059-33.942l-42.496-42.496C371.84 37.121 359.488 32 346.836 32zm0 0"/><path d="M314.668 512h-256C26.305 512 0 485.695 0 453.332V112c0-32.363 26.305-58.668 58.668-58.668h10.664c8.832 0 16 7.168 16 16s-7.168 16-16 16H58.668C43.968 85.332 32 97.301 32 112v341.332C32 468.032 43.969 480 58.668 480h256c14.7 0 26.664-11.969 26.664-26.668v-10.664c0-8.832 7.168-16 16-16s16 7.168 16 16v10.664c0 32.363-26.3 58.668-58.664 58.668zm0 0M368 181.332H208c-8.832 0-16-7.168-16-16s7.168-16 16-16h160c8.832 0 16 7.168 16 16s-7.168 16-16 16zm0 0"/><path d="M368 245.332H208c-8.832 0-16-7.168-16-16s7.168-16 16-16h160c8.832 0 16 7.168 16 16s-7.168 16-16 16zm0 0M368 309.332H208c-8.832 0-16-7.168-16-16s7.168-16 16-16h160c8.832 0 16 7.168 16 16s-7.168 16-16 16zm0 0"/>
+              </svg>
+            </div>
+            }
         {parsedHistory && !loadingHistory &&
          parsedHistory.map((value, index) => {
           let p = 0;
           if(loadedPrices)
           {
               p = getSumPrice(
-                    loadedPrices, 
+                    loadedPrices,
                     value.items, 
-                    100, 
+                    pricePercentage, 
                     priceFlag, categoryFilterFunction ? categoryFilterFunction.filter : function() { return true; })
           }
           
@@ -444,9 +492,9 @@ function App() {
                             style={{borderRadius: '5px', backgroundColor: theme.itemPreviewBackground}}>
                               
                             <span className="font-medium" style={{color: theme.text, zIndex: 1}}>{item.name}<span className="text-xs" style={{color: '#BABABA'}}> x {item.quantity.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span></span>
-                            <span className="font-medium" style={{color: theme.text, zIndex: 1}}>{!loadedPrices ? 'LOADING...' : getPriceString(loadedPrices, item, 100, priceFlag, categoryFilterFunction ? categoryFilterFunction.filter : function() { return true; })}</span>
+                            <span className="font-medium" style={{color: theme.text, zIndex: 1}}>{!loadedPrices ? 'LOADING...' : getPriceString(loadedPrices, item, pricePercentage, priceFlag, categoryFilterFunction ? categoryFilterFunction.filter : function() { return true; })}</span>
 
-                            <div id="item-percent" className="absolute h-full" style={{width: !loadedPrices ? '0%' : `${getPricePercentage(loadedPrices, p, item, priceFlag, 100)}%`, borderRadius: '5px 0px 0px 5px', zIndex: 0, backgroundColor: theme.itemPreviewPercent, left: 0}}></div>
+                            <div id="item-percent" className="absolute h-full" style={{width: !loadedPrices ? '0%' : `${getPricePercentage(loadedPrices, p, item, priceFlag, pricePercentage)}%`, borderRadius: '5px 0px 0px 5px', zIndex: 0, backgroundColor: theme.itemPreviewPercent, left: 0}}></div>
                           
                           </div>
                           );
@@ -464,7 +512,7 @@ function App() {
 
                 <div 
                   className="w-10 h-8 bg-red-500 absolute flex flex-row items-center justify-center"
-                  style={{borderRadius: '5px 0px 5px 0px', right: '0', backgroundColor: theme.historyOuterBox, bottom: '0'}}>
+                  style={{borderRadius: '5px 0px 0px 0px', right: '0', backgroundColor: theme.historyOuterBox, bottom: '0'}}>
                     
                     <svg width="22" height="22" fill={theme.svg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.18 512.18">
                       <path d="M448.18 80h-320c-17.673 0-32 14.327-32 32s14.327 32 32 32h320c17.673 0 32-14.327 32-32s-14.327-32-32-32zM64.18 112a32.004 32.004 0 00-9.44-22.56c-12.481-12.407-32.639-12.407-45.12 0A31.996 31.996 0 00.18 112a27.243 27.243 0 000 6.24 28.851 28.851 0 001.76 6.08 37.139 37.139 0 003.04 5.44 29.275 29.275 0 004 4.96 28.322 28.322 0 004.8 3.84 26.073 26.073 0 005.44 3.04 26.412 26.412 0 006.72 2.4 28.06 28.06 0 006.24 0 31.999 31.999 0 0022.56-9.28 29.275 29.275 0 004-4.96 37.139 37.139 0 003.04-5.44 29.714 29.714 0 002.4-6.08 27.243 27.243 0 000-6.24zM64.18 256a27.356 27.356 0 000-6.24 25.927 25.927 0 00-2.4-5.92 31.985 31.985 0 00-3.04-5.6 23.044 23.044 0 00-4-4.8c-12.481-12.407-32.639-12.407-45.12 0A31.996 31.996 0 00.18 256a35.512 35.512 0 002.4 12.32 35.802 35.802 0 002.88 5.44 30.727 30.727 0 004.16 4.8 23.363 23.363 0 004.8 4 25.958 25.958 0 005.44 3.04 27.212 27.212 0 006.08 1.76c2.047.459 4.142.674 6.24.64 2.073.239 4.167.239 6.24 0a25.968 25.968 0 005.92-1.76 26.72 26.72 0 005.6-3.04 23.363 23.363 0 004.8-4 23.363 23.363 0 004-4.8 25.73 25.73 0 003.04-5.44 27.07 27.07 0 002.4-6.72 26.473 26.473 0 000-6.24zM64.18 400a27.471 27.471 0 000-6.24 27.238 27.238 0 00-2.4-6.08 37.139 37.139 0 00-3.04-5.44 23.363 23.363 0 00-4-4.8c-12.481-12.407-32.639-12.407-45.12 0a23.363 23.363 0 00-4 4.8 37.139 37.139 0 00-3.04 5.44 26.224 26.224 0 00-1.76 6.08A27.499 27.499 0 00.18 400a32.004 32.004 0 009.44 22.56 23.363 23.363 0 004.8 4 25.958 25.958 0 005.44 3.04 27.212 27.212 0 006.08 1.76c2.047.459 4.142.674 6.24.64 2.073.239 4.167.239 6.24 0a25.968 25.968 0 005.92-1.76 26.72 26.72 0 005.6-3.04 23.363 23.363 0 004.8-4 23.363 23.363 0 004-4.8 25.617 25.617 0 003.04-5.44 27.164 27.164 0 002.4-6.72 26.473 26.473 0 000-6.24zM480.18 224h-352c-17.673 0-32 14.327-32 32s14.327 32 32 32h352c17.673 0 32-14.327 32-32s-14.327-32-32-32zM336.18 368h-208c-17.673 0-32 14.327-32 32 0 17.673 14.327 32 32 32h208c17.673 0 32-14.327 32-32 0-17.673-14.327-32-32-32z"/>

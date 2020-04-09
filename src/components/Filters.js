@@ -43,6 +43,8 @@ export default function Filters(attributes) {
     const onPricingChanged = attributes.onPricingChanged || function() {};
     const onPlayerIgnore = attributes.onPlayerIgnore || function() {};
 
+    const onPricePercentChange = attributes.onPricePercentChange || function() {};
+
     console.log(onPlayerIgnore);
 
 
@@ -183,7 +185,23 @@ export default function Filters(attributes) {
                                     })}
                                 </div>
 
-                                <div id="price-grouping" className="flex flex-row">
+                                <div id="price-grouping" className="flex flex-row items-center">
+                                    <div id="price-percentage-grouping">
+                                        <input 
+                                            type="text" 
+                                            placeholder="90" 
+                                            className="p-2 rounded w-12 text-center text-white mr-1 font-medium focus:outline-none" 
+                                            style={{
+                                                backgroundColor: theme.pricingButtonActive
+                                            }} 
+                                            onChange={(ev) => {
+                                                onPricePercentChange(ev.target.value);
+                                            }}
+                                            />
+
+                                        <label className="font-medium mr-4 text-base" style={{color: '#BABABA'}}>%</label>
+                                    </div>
+
                                     <button 
                                         className="p-2 pl-4 pr-4 uppercase font-medium focus:outline-none"
                                         style={{backgroundColor: pricing === BUY ? theme.pricingButtonActive : theme.pricingButtonDeactive, color: theme.text, borderRadius: '5px 0px 0px 5px'}}
