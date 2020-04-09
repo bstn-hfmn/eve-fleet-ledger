@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/eve-fleet-ledger/static/css/main.fc62393a.chunk.css",
-    "main.js": "/eve-fleet-ledger/static/js/main.4674b299.chunk.js",
-    "main.js.map": "/eve-fleet-ledger/static/js/main.4674b299.chunk.js.map",
+    "main.js": "/eve-fleet-ledger/static/js/main.da10b976.chunk.js",
+    "main.js.map": "/eve-fleet-ledger/static/js/main.da10b976.chunk.js.map",
     "runtime-main.js": "/eve-fleet-ledger/static/js/runtime-main.581e8fe8.js",
     "runtime-main.js.map": "/eve-fleet-ledger/static/js/runtime-main.581e8fe8.js.map",
     "static/js/2.7ee8786a.chunk.js": "/eve-fleet-ledger/static/js/2.7ee8786a.chunk.js",
     "static/js/2.7ee8786a.chunk.js.map": "/eve-fleet-ledger/static/js/2.7ee8786a.chunk.js.map",
     "index.html": "/eve-fleet-ledger/index.html",
-    "precache-manifest.f29adf1d140c58da89ecf9dcb8dda92d.js": "/eve-fleet-ledger/precache-manifest.f29adf1d140c58da89ecf9dcb8dda92d.js",
+    "precache-manifest.7b50147c275377275ddaa1e1b68d6340.js": "/eve-fleet-ledger/precache-manifest.7b50147c275377275ddaa1e1b68d6340.js",
     "service-worker.js": "/eve-fleet-ledger/service-worker.js",
     "static/css/main.fc62393a.chunk.css.map": "/eve-fleet-ledger/static/css/main.fc62393a.chunk.css.map",
     "static/js/2.7ee8786a.chunk.js.LICENSE.txt": "/eve-fleet-ledger/static/js/2.7ee8786a.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.581e8fe8.js",
     "static/js/2.7ee8786a.chunk.js",
     "static/css/main.fc62393a.chunk.css",
-    "static/js/main.4674b299.chunk.js"
+    "static/js/main.da10b976.chunk.js"
   ]
 }

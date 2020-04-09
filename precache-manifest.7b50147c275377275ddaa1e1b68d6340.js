@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "7bcb993df4bf46b00384b3f25ccc3e69",
+    "revision": "c6fa73265c38392cea514ae6082c472b",
     "url": "/eve-fleet-ledger/index.html"
   },
   {
-    "revision": "f76c98b5022ae31b3bcc",
+    "revision": "0709686ce389826423ba",
     "url": "/eve-fleet-ledger/static/css/main.fc62393a.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/eve-fleet-ledger/static/js/2.7ee8786a.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "f76c98b5022ae31b3bcc",
-    "url": "/eve-fleet-ledger/static/js/main.4674b299.chunk.js"
+    "revision": "0709686ce389826423ba",
+    "url": "/eve-fleet-ledger/static/js/main.da10b976.chunk.js"
   },
   {
     "revision": "37cbdad620a8f66384bf",
